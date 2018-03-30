@@ -1,0 +1,16 @@
+[
+  {
+    "modid": "worldofboxes",
+    "name": "World of Boxes",
+    "description": "Whats in the box?",
+    "version": "${version}",
+    "mcversion": "${mcversion}",
+    "url": "http://www.builtbroken.com",
+    "updateUrl": "",
+    "authorList": ["Darkguardsman"],
+    "credits": "",
+    "logoFile": "",
+    "screenshots": [],
+    "dependencies": []
+  }
+]
