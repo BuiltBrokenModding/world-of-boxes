@@ -85,6 +85,8 @@ public class TileEntityDimBox extends TileEntity
     public void teleport(EntityPlayerMP player)
     {
         //TODO create short distance teleporter if same dim
+        //TODO spawn above box
+        //TODO push player in an ark off the box
 
         //Get old dim
         int oldDimension = player.getEntityWorld().provider.getDimension();

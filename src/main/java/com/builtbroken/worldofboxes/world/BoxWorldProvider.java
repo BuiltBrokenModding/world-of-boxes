@@ -29,6 +29,6 @@ public class BoxWorldProvider extends WorldProvider
     @Override
     public IChunkGenerator createChunkGenerator()
     {
-        return new ChunkGeneratorOverworld(world, world.getSeed(), world.getWorldInfo().isMapFeaturesEnabled(), world.getWorldInfo().getGeneratorOptions());
+        return new ChunkGeneratorBoxworld(world, world.getSeed(), world.getWorldInfo().isMapFeaturesEnabled(), world.getWorldInfo().getGeneratorOptions());
     }
 }
