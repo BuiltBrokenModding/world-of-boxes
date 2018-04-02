@@ -3,7 +3,6 @@ package com.builtbroken.worldofboxes.world;
 import com.builtbroken.worldofboxes.WorldOfBoxes;
 import net.minecraft.world.DimensionType;
 import net.minecraft.world.WorldProvider;
-import net.minecraft.world.gen.ChunkGeneratorOverworld;
 import net.minecraft.world.gen.IChunkGenerator;
 
 /**

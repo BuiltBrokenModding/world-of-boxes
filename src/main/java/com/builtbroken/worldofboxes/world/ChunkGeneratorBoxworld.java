@@ -113,25 +113,25 @@ public class ChunkGeneratorBoxworld implements IChunkGenerator
         this.biomesForGeneration = this.world.getBiomeProvider().getBiomesForGeneration(this.biomesForGeneration, x * 4 - 2, z * 4 - 2, 10, 10);
         this.generateHeightmap(x * 4, 0, z * 4);
 
-        for (int i = 0; i < 4; ++i)
+        for (int x_section = 0; x_section < 4; ++x_section)
         {
-            int j = i * 5;
-            int k = (i + 1) * 5;
+            int j = x_section * 5;
+            int k = (x_section + 1) * 5;
 
-            for (int l = 0; l < 4; ++l)
+            for (int z_section = 0; z_section < 4; ++z_section)
             {
-                int i1 = (j + l) * 33;
-                int j1 = (j + l + 1) * 33;
-                int k1 = (k + l) * 33;
-                int l1 = (k + l + 1) * 33;
+                int i1 = (j + z_section) * 33;
+                int j1 = (j + z_section + 1) * 33;
+                int k1 = (k + z_section) * 33;
+                int l1 = (k + z_section + 1) * 33;
 
                 for (int i2 = 0; i2 < 32; ++i2)
                 {
-                    double d0 = 0.125D;
                     double d1 = this.heightMap[i1 + i2];
                     double d2 = this.heightMap[j1 + i2];
                     double d3 = this.heightMap[k1 + i2];
                     double d4 = this.heightMap[l1 + i2];
+
                     double d5 = (this.heightMap[i1 + i2 + 1] - d1) * 0.125D;
                     double d6 = (this.heightMap[j1 + i2 + 1] - d2) * 0.125D;
                     double d7 = (this.heightMap[k1 + i2 + 1] - d3) * 0.125D;
@@ -139,27 +139,25 @@ public class ChunkGeneratorBoxworld implements IChunkGenerator
 
                     for (int j2 = 0; j2 < 8; ++j2)
                     {
-                        double d9 = 0.25D;
                         double d10 = d1;
                         double d11 = d2;
                         double d12 = (d3 - d1) * 0.25D;
                         double d13 = (d4 - d2) * 0.25D;
 
-                        for (int k2 = 0; k2 < 4; ++k2)
+                        for (int xp = 0; xp < 4; ++xp)
                         {
-                            double d14 = 0.25D;
                             double d16 = (d11 - d10) * 0.25D;
                             double lvt_45_1_ = d10 - d16;
 
-                            for (int l2 = 0; l2 < 4; ++l2)
+                            for (int zp = 0; zp < 4; ++zp)
                             {
                                 if ((lvt_45_1_ += d16) > 0.0D)
                                 {
-                                    primer.setBlockState(i * 4 + k2, i2 * 8 + j2, l * 4 + l2, STONE);
+                                    primer.setBlockState(x_section * 4 + xp, i2 * 8 + j2, z_section * 4 + zp, STONE);
                                 }
                                 else if (i2 * 8 + j2 < this.settings.seaLevel)
                                 {
-                                    primer.setBlockState(i * 4 + k2, i2 * 8 + j2, l * 4 + l2, this.oceanBlock);
+                                    primer.setBlockState(x_section * 4 + xp, i2 * 8 + j2, z_section * 4 + zp, this.oceanBlock);
                                 }
                             }
 
@@ -192,17 +190,15 @@ public class ChunkGeneratorBoxworld implements IChunkGenerator
             {
                 Biome biome = biomesIn[j + i * 16];
                 biome.genTerrainBlocks(this.world, this.rand, primer, x * 16 + i, z * 16 + j, this.depthBuffer[j + i * 16]);
-                //TODO replace blocks with cardboard versions
             }
         }
     }
 
-    /**
-     * Generates the chunk at the specified position, from scratch
-     */
+    @Override
     public Chunk generateChunk(int x, int z)
     {
         this.rand.setSeed((long) x * 341873128712L + (long) z * 132897987541L);
+
         ChunkPrimer chunkprimer = new ChunkPrimer();
         this.setBlocksInChunk(x, z, chunkprimer);
         this.biomesForGeneration = this.world.getBiomeProvider().getBiomes(this.biomesForGeneration, x * 16, z * 16, 16, 16);
@@ -230,6 +226,8 @@ public class ChunkGeneratorBoxworld implements IChunkGenerator
                 this.villageGenerator.generate(this.world, x, z, chunkprimer);
             }
         }
+
+        //TODO replace blocks with cardboard versions
 
         Chunk chunk = new Chunk(this.world, chunkprimer, x, z);
         byte[] abyte = chunk.getBiomeArray();
@@ -360,9 +358,7 @@ public class ChunkGeneratorBoxworld implements IChunkGenerator
         }
     }
 
-    /**
-     * Generate initial structures in this chunk, e.g. mineshafts, temples, lakes, and dungeons
-     */
+    @Override
     public void populate(int x, int z)
     {
         BlockFalling.fallInstantly = true;

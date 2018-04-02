@@ -2,6 +2,7 @@ package com.builtbroken.worldofboxes;
 
 import com.builtbroken.worldofboxes.config.ConfigDim;
 import com.builtbroken.worldofboxes.content.block.box.BlockDimBox;
+import com.builtbroken.worldofboxes.world.BoxReplacerWorldGenerator;
 import com.builtbroken.worldofboxes.world.BoxWorldProvider;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
@@ -15,6 +16,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.registry.EntityEntry;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 
 /**
  * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
@@ -62,6 +64,9 @@ public class WorldOfBoxes
 
         dimensionType = DimensionType.register(DOMAIN, "_worldofboxes", ConfigDim.dimID, BoxWorldProvider.class, false);
         DimensionManager.registerDimension(ConfigDim.dimID, dimensionType);
+
+        //Generator, we want to run last to make sure we replace all blocks
+        GameRegistry.registerWorldGenerator(new BoxReplacerWorldGenerator(), Integer.MAX_VALUE);
     }
 
     @SubscribeEvent
