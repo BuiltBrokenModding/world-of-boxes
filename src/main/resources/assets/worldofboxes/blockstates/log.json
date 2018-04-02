@@ -1,0 +1,61 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "cube_column",
+    "textures": {
+      "end": "worldofboxes:blocks/logs/log_oak_top",
+      "side": "worldofboxes:blocks/logs/log_oak"
+    }
+  },
+  "variants": {
+    "variant": {
+      "oak": {
+        "textures": {
+          "end": "worldofboxes:blocks/logs/log_oak_top",
+          "side": "worldofboxes:blocks/logs/log_oak"
+        }
+      },
+      "spruce": {
+        "textures": {
+          "end": "worldofboxes:blocks/logs/log_spruce_top",
+          "side": "worldofboxes:blocks/logs/log_spruce"
+        }
+      },
+      "birch": {
+        "textures": {
+          "end": "worldofboxes:blocks/logs/log_birch_top",
+          "side": "worldofboxes:blocks/logs/log_birch"
+        }
+      },
+      "jungle": {
+        "textures": {
+          "end": "worldofboxes:blocks/logs/log_jungle_top",
+          "side": "worldofboxes:blocks/logs/log_jungle"
+        }
+      },
+      "acacia": {
+        "textures": {
+          "end": "worldofboxes:blocks/logs/log_acacia_top",
+          "side": "worldofboxes:blocks/logs/log_acacia"
+        }
+      },
+      "dark_oak": {
+        "textures": {
+          "end": "worldofboxes:blocks/logs/log_big_oak_top",
+          "side": "worldofboxes:blocks/logs/log_big_oak"
+        }
+      }
+    },
+    "axis": {
+      "y": {},
+      "z": {
+        "x": 90
+      },
+      "x": {
+        "x": 90,
+        "y": 90
+      },
+      "none": {}
+    }
+  }
+}

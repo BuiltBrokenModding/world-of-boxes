@@ -2,11 +2,12 @@ package com.builtbroken.worldofboxes.world;
 
 import com.builtbroken.jlib.lang.StringHelpers;
 import com.builtbroken.worldofboxes.WorldOfBoxes;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockColored;
+import com.builtbroken.worldofboxes.content.block.BlockCBTallGrass;
+import com.builtbroken.worldofboxes.reg.WBBlocks;
+import net.minecraft.block.*;
+import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
-import net.minecraft.item.EnumDyeColor;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
@@ -36,25 +37,29 @@ public class BoxReplacerWorldGenerator implements IWorldGenerator
                     for (int y = 0; y < 255; y++)
                     {
                         BlockPos pos = new BlockPos((chunkX * 16) + x, y, (chunkZ * 16) + z);
-                        if(world.isBlockLoaded(pos, false))
+                        if (world.isBlockLoaded(pos, false))
                         {
                             IBlockState state = chunk.getBlockState(pos);
                             Block block = state.getBlock();
                             if (block == Blocks.GRASS)
                             {
-                                chunk.setBlockState(pos, Blocks.WOOL.getDefaultState().withProperty(BlockColored.COLOR, EnumDyeColor.GREEN));
+                                chunk.setBlockState(pos, WBBlocks.GRASS.getDefaultState());
                             }
                             else if (block == Blocks.TALLGRASS || block == Blocks.DEADBUSH)
                             {
-                                chunk.setBlockState(pos, Blocks.WOOL.getDefaultState().withProperty(BlockColored.COLOR, EnumDyeColor.LIGHT_BLUE));
+                                int meta = state.getValue(BlockTallGrass.TYPE).getMeta();
+                                BlockCBTallGrass.EnumType type = BlockCBTallGrass.EnumType.byMetadata(meta);
+                                chunk.setBlockState(pos, WBBlocks.TALL_GRASS.getDefaultState().withProperty(BlockCBTallGrass.TYPE, type));
                             }
                             else if (block == Blocks.LOG || block == Blocks.LOG2)
                             {
-                                chunk.setBlockState(pos, Blocks.WOOL.getDefaultState().withProperty(BlockColored.COLOR, EnumDyeColor.BROWN));
+                                chunk.setBlockState(pos, WBBlocks.LOG.getStateFromMeta(block.getMetaFromState(state))); //lazy way, meta should be 1:1 anyways
                             }
                             else if (block == Blocks.LEAVES || block == Blocks.LEAVES2)
                             {
-                                chunk.setBlockState(pos, Blocks.WOOL.getDefaultState().withProperty(BlockColored.COLOR, EnumDyeColor.MAGENTA));
+                                PropertyEnum<BlockPlanks.EnumType> varient = block == Blocks.LEAVES ? BlockOldLeaf.VARIANT : BlockNewLeaf.VARIANT;
+                                BlockPlanks.EnumType value = state.getValue(varient);
+                                chunk.setBlockState(pos, WBBlocks.LEAF.getDefaultState().withProperty(BlockOldLeaf.VARIANT, value));
                             }
                         }
                     }

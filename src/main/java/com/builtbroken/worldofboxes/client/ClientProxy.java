@@ -1,4 +1,6 @@
-package com.builtbroken.worldofboxes;
+package com.builtbroken.worldofboxes.client;
+
+import com.builtbroken.worldofboxes.CommonProxy;
 
 /**
  * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.

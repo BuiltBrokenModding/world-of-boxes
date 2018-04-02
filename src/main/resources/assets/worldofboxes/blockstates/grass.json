@@ -1,0 +1,29 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "minecraft:grass"
+  },
+  "variants": {
+    "snowy": {
+      "false": {
+        "model": "minecraft:grass",
+        "textures": {
+          "particle": "worldofboxes:blocks/dirt",
+          "bottom": "worldofboxes:blocks/dirt",
+          "top": "worldofboxes:blocks/grass_top",
+          "side": "worldofboxes:blocks/grass_side",
+          "overlay": "worldofboxes:blocks/grass_side_overlay"
+        }
+      },
+      "true": {
+        "model": "cube_all",
+        "textures": {
+          "particle": "worldofboxes:blocks/dirt",
+          "bottom": "worldofboxes:blocks/dirt",
+          "top": "worldofboxes:blocks/grass_top",
+          "side": "worldofboxes:blocks/grass_side_snowed"
+        }
+      }
+    }
+  }
+}
