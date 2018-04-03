@@ -31,7 +31,7 @@ public class TileEntityDimBox extends TileEntity implements ITickable
     public final static String NBT_TARGET_DIM = "targetDim";
     public final static String NBT_TARGET = "target";
 
-    public final static int ANIMATION_TIMER = 300;
+    public final static int ANIMATION_TIMER = 200;
 
     private static Method copyFromOldField; //TODO replace with AT
 
@@ -46,7 +46,6 @@ public class TileEntityDimBox extends TileEntity implements ITickable
 
     private byte packetTimer = 0;
     private byte updateCheck = 0;
-    private BlockDimBox.State prevRenderState;
 
     public boolean isSetup()
     {
@@ -78,14 +77,19 @@ public class TileEntityDimBox extends TileEntity implements ITickable
             IBlockState state = world.getBlockState(getPos());
             if (state.getProperties().containsKey(BlockDimBox.STATE_PROPERTY_ENUM))
             {
-                BlockDimBox.State renderState = state.getValue(BlockDimBox.STATE_PROPERTY_ENUM);
-                if (renderState != prevRenderState)
+                IBlockState state1 = WBBlocks.BOX.getActualState(state, world, getPos());
+                if (state != state1)
                 {
-                    prevRenderState = renderState;
-                    world.markBlockRangeForRenderUpdate(getPos(), getPos());
+                    world.setBlockState(pos, state1);
                 }
             }
         }
+    }
+
+    @Override
+    public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newSate)
+    {
+        return oldState.getBlock() != newSate.getBlock();
     }
 
     @Override
