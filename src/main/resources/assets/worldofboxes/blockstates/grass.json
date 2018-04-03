@@ -4,6 +4,12 @@
     "model": "minecraft:grass"
   },
   "variants": {
+    "normal": [
+      {}
+    ],
+    "inventory": [
+      {}
+    ],
     "snowy": {
       "false": {
         "model": "minecraft:grass",
