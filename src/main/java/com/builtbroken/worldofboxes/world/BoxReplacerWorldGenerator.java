@@ -2,10 +2,8 @@ package com.builtbroken.worldofboxes.world;
 
 import com.builtbroken.jlib.lang.StringHelpers;
 import com.builtbroken.worldofboxes.WorldOfBoxes;
-import com.builtbroken.worldofboxes.content.block.BlockCBTallGrass;
 import com.builtbroken.worldofboxes.reg.WBBlocks;
-import net.minecraft.block.*;
-import net.minecraft.block.properties.PropertyEnum;
+import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
@@ -45,21 +43,17 @@ public class BoxReplacerWorldGenerator implements IWorldGenerator
                             {
                                 chunk.setBlockState(pos, WBBlocks.GRASS.getDefaultState());
                             }
-                            else if (block == Blocks.TALLGRASS || block == Blocks.DEADBUSH)
+                            else if (block == Blocks.TALLGRASS)
                             {
-                                int meta = state.getValue(BlockTallGrass.TYPE).getMeta();
-                                BlockCBTallGrass.EnumType type = BlockCBTallGrass.EnumType.byMetadata(meta);
-                                chunk.setBlockState(pos, WBBlocks.TALL_GRASS.getDefaultState().withProperty(BlockCBTallGrass.TYPE, type));
+                                chunk.setBlockState(pos, WBBlocks.TALL_GRASS.getStateFromMeta(block.getMetaFromState(state)));
                             }
                             else if (block == Blocks.LOG || block == Blocks.LOG2)
                             {
-                                chunk.setBlockState(pos, WBBlocks.LOG.getStateFromMeta(block.getMetaFromState(state))); //lazy way, meta should be 1:1 anyways
+                                chunk.setBlockState(pos, (block == Blocks.LOG ? WBBlocks.LOG : WBBlocks.LOG2).getStateFromMeta(block.getMetaFromState(state))); //lazy way, meta should be 1:1 anyways
                             }
                             else if (block == Blocks.LEAVES || block == Blocks.LEAVES2)
                             {
-                                PropertyEnum<BlockPlanks.EnumType> varient = block == Blocks.LEAVES ? BlockOldLeaf.VARIANT : BlockNewLeaf.VARIANT;
-                                BlockPlanks.EnumType value = state.getValue(varient);
-                                chunk.setBlockState(pos, WBBlocks.LEAF.getDefaultState().withProperty(BlockOldLeaf.VARIANT, value));
+                                chunk.setBlockState(pos, (block == Blocks.LEAVES ? WBBlocks.LEAF : WBBlocks.LEAF2).getStateFromMeta(block.getMetaFromState(state)));
                             }
                         }
                     }
