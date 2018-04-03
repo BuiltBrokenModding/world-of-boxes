@@ -141,7 +141,7 @@
 			"rotation": {
 				"origin": [0, 16, 8],
 				"axis": "z",
-				"angle": 22.5
+				"angle": 0
 			},
 			"type": "cube"
 		},
@@ -169,7 +169,7 @@
 			"rotation": {
 				"origin": [16, 16, 8],
 				"axis": "z",
-				"angle": -22.5
+				"angle": 0
 			},
 			"type": "cube"
 		}

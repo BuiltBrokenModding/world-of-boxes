@@ -1,14 +1,19 @@
 package com.builtbroken.worldofboxes.content.block.box;
 
 import com.builtbroken.worldofboxes.config.ConfigDim;
+import com.builtbroken.worldofboxes.reg.WBBlocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
+import net.minecraftforge.common.DimensionManager;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -65,11 +70,55 @@ public class TileEntityDimBox extends TileEntity
 
     public void randomizeDim()
     {
-        teleportTarget = new BlockPos(0, 255, 0);
-        teleportDim = ConfigDim.dimID;
-        isSetup = true;
-        //TODO start dim animation
-        //TODO create world
+        //Get random point to teleport user
+        final int x = world.rand.nextInt(10000) - world.rand.nextInt(10000);
+        final int z = world.rand.nextInt(10000) - world.rand.nextInt(10000);
+
+        //Init target point for ray trace
+        int y = 100;
+        teleportTarget = new BlockPos(x, y, z);
+
+        //Get world
+        final int targetDim = world.provider.getDimension() == ConfigDim.dimID ? 0 : ConfigDim.dimID;
+        final World targetWorld = DimensionManager.getWorld(targetDim);
+
+        //Load chunk
+        targetWorld.getBlockState(teleportTarget);
+
+        //Find spot to start looking for placments
+        RayTraceResult result = targetWorld.rayTraceBlocks(new Vec3d(x, 255, z), new Vec3d(x, 0, z), false, true, true);
+        if (result != null && result.typeOfHit == RayTraceResult.Type.BLOCK)
+        {
+            //Find spot to place box
+            y = result.getBlockPos().getY() + 1;
+            BlockPos pos = new BlockPos(x, y, z);
+            while (!targetWorld.getBlockState(pos).getBlock().isReplaceable(targetWorld, pos))
+            {
+                y++;
+                pos = new BlockPos(x, y, z);
+            }
+
+            //Block box and set data, so player can return
+            targetWorld.setBlockState(pos, WBBlocks.BOX.getDefaultState());
+            TileEntity tile = targetWorld.getTileEntity(pos);
+            if (tile instanceof TileEntityDimBox)
+            {
+                ((TileEntityDimBox) tile).setTarget(world.provider.getDimension(), getPos().up());
+            }
+
+            teleportTarget = pos.up();
+
+            //TODO start dim animation
+            //TODO randomize world grid
+            setTarget(targetDim , teleportTarget);
+        }
+    }
+
+    public void setTarget(int dim, BlockPos teleportTarget)
+    {
+        this.teleportDim = dim;
+        this.teleportTarget = teleportTarget;
+        this.isSetup = true;
     }
 
     public BlockPos getTeleportTarget()
@@ -84,42 +133,45 @@ public class TileEntityDimBox extends TileEntity
      */
     public void teleport(EntityPlayerMP player)
     {
-        //TODO create short distance teleporter if same dim
-        //TODO spawn above box
-        //TODO push player in an ark off the box
-
-        //Get old dim
-        int oldDimension = player.getEntityWorld().provider.getDimension();
-
-        //Get server
-        MinecraftServer server = player.getEntityWorld().getMinecraftServer();
-
-        //Get target dim world
-        WorldServer worldServer = server.getWorld(teleportDim);
-
-        //Verify target dim exists
-        if (worldServer != null && worldServer.getMinecraftServer() != null)
+        if(isSetup())
         {
-            //Reset XP to prevent issues
-            player.addExperienceLevel(0);
+            //TODO create short distance teleporter if same dim
+            //TODO spawn above box
+            //TODO push player in an ark off the box
 
-            //Transfer player
-            worldServer.getMinecraftServer().getPlayerList().transferPlayerToDimension(player, teleportDim, new TeleporterSetPos(worldServer, getTeleportTarget()));
+            //Get old dim
+            int oldDimension = player.getEntityWorld().provider.getDimension();
 
-            //Update player
-            player.setPositionAndUpdate(getTeleportTarget().getX(), getTeleportTarget().getY(), getTeleportTarget().getZ());
+            //Get server
+            MinecraftServer server = player.getEntityWorld().getMinecraftServer();
 
-            //Edge case for the end
-            if (oldDimension == 1)
+            //Get target dim world
+            WorldServer worldServer = server.getWorld(teleportDim);
+
+            //Verify target dim exists
+            if (worldServer != null && worldServer.getMinecraftServer() != null)
             {
+                //Reset XP to prevent issues
+                player.addExperienceLevel(0);
+
+                //Transfer player
+                worldServer.getMinecraftServer().getPlayerList().transferPlayerToDimension(player, teleportDim, new TeleporterSetPos(worldServer, getTeleportTarget()));
+
+                //Update player
                 player.setPositionAndUpdate(getTeleportTarget().getX(), getTeleportTarget().getY(), getTeleportTarget().getZ());
-                worldServer.spawnEntity(player);
-                worldServer.updateEntityWithOptionalForce(player, false);
+
+                //Edge case for the end
+                if (oldDimension == 1)
+                {
+                    player.setPositionAndUpdate(getTeleportTarget().getX(), getTeleportTarget().getY(), getTeleportTarget().getZ());
+                    worldServer.spawnEntity(player);
+                    worldServer.updateEntityWithOptionalForce(player, false);
+                }
             }
-        }
-        else
-        {
-            player.sendMessage(new TextComponentString("Error: Failed to locate dimension [" + teleportDim + "] to send you to!!!")); //TODO make red
+            else
+            {
+                player.sendMessage(new TextComponentString("Error: Failed to locate dimension [" + teleportDim + "] to send you to!!!")); //TODO make red
+            }
         }
     }
 

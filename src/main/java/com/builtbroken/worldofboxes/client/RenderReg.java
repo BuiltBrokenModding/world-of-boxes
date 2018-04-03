@@ -1,17 +1,29 @@
 package com.builtbroken.worldofboxes.client;
 
 import com.builtbroken.worldofboxes.WorldOfBoxes;
+import com.builtbroken.worldofboxes.client.world.SkyBoxRenderBox;
+import com.builtbroken.worldofboxes.content.block.BlockCBTallGrass;
+import com.builtbroken.worldofboxes.content.block.box.TESRBox;
+import com.builtbroken.worldofboxes.content.block.box.TileEntityDimBox;
 import com.builtbroken.worldofboxes.reg.WBBlocks;
+import com.builtbroken.worldofboxes.world.BoxWorldProvider;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockOldLeaf;
 import net.minecraft.block.BlockPlanks;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.color.IBlockColor;
+import net.minecraft.item.Item;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ColorizerFoliage;
 import net.minecraft.world.ColorizerGrass;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.biome.BiomeColorHelper;
 import net.minecraftforge.client.event.ColorHandlerEvent;
+import net.minecraftforge.client.event.ModelRegistryEvent;
+import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.event.world.WorldEvent;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
@@ -26,13 +38,13 @@ import java.util.Random;
 @Mod.EventBusSubscriber(value = Side.CLIENT, modid = WorldOfBoxes.DOMAIN)
 public final class RenderReg
 {
+    public static final Random random = new Random();
+
     @SubscribeEvent
     public static void registerBlockColors(ColorHandlerEvent.Block event)
     {
         event.getBlockColors().registerBlockColorHandler(new IBlockColor()
         {
-            Random random = new Random();
-
             @Override
             public int colorMultiplier(IBlockState state, @Nullable IBlockAccess worldIn, @Nullable BlockPos pos, int tintIndex)
             {
@@ -45,29 +57,77 @@ public final class RenderReg
 
         event.getBlockColors().registerBlockColorHandler(new IBlockColor()
         {
-            Random random = new Random();
+
 
             @Override
             public int colorMultiplier(IBlockState state, @Nullable IBlockAccess worldIn, @Nullable BlockPos pos, int tintIndex)
             {
-                BlockPlanks.EnumType blockplanks$enumtype = (BlockPlanks.EnumType) state.getValue(BlockOldLeaf.VARIANT);
+                BlockPlanks.EnumType type = (BlockPlanks.EnumType) state.getValue(BlockOldLeaf.VARIANT);
 
-                if (blockplanks$enumtype == BlockPlanks.EnumType.SPRUCE)
+                int color;
+
+                if (type == BlockPlanks.EnumType.SPRUCE)
                 {
-                    return ColorizerFoliage.getFoliageColorPine();
+                    color = ColorizerFoliage.getFoliageColorPine();
                 }
-                else if (blockplanks$enumtype == BlockPlanks.EnumType.BIRCH)
+                else if (type == BlockPlanks.EnumType.BIRCH)
                 {
-                    return ColorizerFoliage.getFoliageColorBirch();
+                    color = ColorizerFoliage.getFoliageColorBirch();
                 }
                 else
                 {
-                    int color = worldIn != null && pos != null
+                    color = worldIn != null && pos != null
                             ? BiomeColorHelper.getFoliageColorAtPos(worldIn, pos)
                             : ColorizerFoliage.getFoliageColorBasic();
-                    return color + random.nextInt(100);
+
                 }
+                return color + random.nextInt(100);
             }
         }, WBBlocks.LEAF);
+
+        event.getBlockColors().registerBlockColorHandler(new IBlockColor()
+        {
+            public int colorMultiplier(IBlockState state, @Nullable IBlockAccess worldIn, @Nullable BlockPos pos, int tintIndex)
+            {
+                int color;
+                if (worldIn != null && pos != null)
+                {
+                    color = BiomeColorHelper.getGrassColorAtPos(worldIn, pos);
+                }
+                else
+                {
+                    color = state.getValue(BlockCBTallGrass.TYPE) == BlockCBTallGrass.EnumType.DEAD_BUSH ? 16777215 : ColorizerGrass.getGrassColor(0.5D, 1.0D);
+                }
+                return color + random.nextInt(100);
+            }
+        }, WBBlocks.TALL_GRASS);
+    }
+
+    @SubscribeEvent
+    public static void registerAllModels(ModelRegistryEvent event)
+    {
+        addItemRender(WBBlocks.BOX);
+
+        ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(WBBlocks.LOG2), 0, new ModelResourceLocation(WBBlocks.LOG.getRegistryName(), "inventory"));
+        ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(WBBlocks.LEAF2), 0, new ModelResourceLocation(WBBlocks.LEAF.getRegistryName(), "inventory"));
+
+        ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(WBBlocks.LOG), 0, new ModelResourceLocation(WBBlocks.LOG.getRegistryName(), "inventory"));
+        ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(WBBlocks.LEAF), 0, new ModelResourceLocation(WBBlocks.LEAF.getRegistryName(), "inventory"));
+
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityDimBox.class, new TESRBox());
+    }
+
+    private static void addItemRender(Block block)
+    {
+        ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(block), 0, new ModelResourceLocation(block.getRegistryName(), "inventory"));
+    }
+
+    @SubscribeEvent
+    public static void onWorldLoad(WorldEvent.Load event)
+    {
+        if(event.getWorld().provider instanceof BoxWorldProvider)
+        {
+            event.getWorld().provider.setSkyRenderer(new SkyBoxRenderBox());
+        }
     }
 }

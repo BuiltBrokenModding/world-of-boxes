@@ -1,0 +1,31 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "worldofboxes:box_model"
+  },
+  "variants": {
+    "normal": [
+      {}
+    ],
+    "inventory": {
+      "model": "cube_all",
+      "textures": {
+        "all": "worldofboxes:blocks/dirt"
+      }
+    },
+    "facing": {
+      "up": {
+      },
+      "down": {
+      },
+      "north": {
+      },
+      "south": {
+      },
+      "east": {
+      },
+      "west": {
+      }
+    }
+  }
+}
