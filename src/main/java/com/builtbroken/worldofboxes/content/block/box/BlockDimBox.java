@@ -5,6 +5,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyDirection;
+import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
@@ -15,10 +16,12 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
@@ -31,11 +34,13 @@ import javax.annotation.Nullable;
  */
 public class BlockDimBox extends Block implements ITileEntityProvider
 {
-    public static final PropertyDirection FACING = PropertyDirection.create("facing");
+    public static final PropertyDirection FACING_PROPERTY = PropertyDirection.create("facing");
+    public static final PropertyEnum<State> STATE_PROPERTY_ENUM = PropertyEnum.create("state", State.class);
 
     public BlockDimBox()
     {
         super(Material.WOOD);
+        setDefaultState(getDefaultState().withProperty(STATE_PROPERTY_ENUM, State.CLOSED));
         setRegistryName(WorldOfBoxes.DOMAIN, "box");
         setUnlocalizedName(WorldOfBoxes.PREFIX + "box");
         setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
@@ -64,22 +69,25 @@ public class BlockDimBox extends Block implements ITileEntityProvider
 
                 if (isAboveClear)
                 {
-
                     TileEntity tile = worldIn.getTileEntity(pos);
                     if (tile instanceof TileEntityDimBox)
                     {
                         //Setup box
                         if (!((TileEntityDimBox) tile).isSetup())
                         {
-                            //TODO play animation
-                            //TODO use GUI for randomization
-                            //playerIn.openGui(WorldOfBoxes.INSTANCE, 0, worldIn, pos.getX(), pos.getY(), pos.getZ());
-                            ((TileEntityDimBox) tile).randomizeDim();
+                            if (!((TileEntityDimBox) tile).isDoingSetupAnimation())
+                            {
+                                playerIn.sendMessage(new TextComponentString("TheBox: Generating boxes inside of boxes, comprised of boxes made from boxes.... to create a world of boxes."));
+                                ((TileEntityDimBox) tile).startSetupAnimation();
+                            }
                         }
+                        else
+                        {
 
-                        //Teleport player
-                        //TODO play animation
-                        ((TileEntityDimBox) tile).teleport((EntityPlayerMP) playerIn);
+                            //Teleport player
+                            //TODO play animation
+                            ((TileEntityDimBox) tile).teleport((EntityPlayerMP) playerIn);
+                        }
                     }
                 }
                 else
@@ -119,24 +127,56 @@ public class BlockDimBox extends Block implements ITileEntityProvider
     @Override
     protected BlockStateContainer createBlockState()
     {
-        return new BlockStateContainer(this, FACING);
+        return new BlockStateContainer(this, FACING_PROPERTY, STATE_PROPERTY_ENUM);
     }
 
     @Override
     public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
     {
-        return this.getDefaultState().withProperty(FACING, placer.getHorizontalFacing());
+        return this.getDefaultState().withProperty(FACING_PROPERTY, placer.getHorizontalFacing());
     }
 
     @Override
     public IBlockState getStateFromMeta(int meta)
     {
-        return getDefaultState().withProperty(FACING, EnumFacing.getFront(meta));
+        return getDefaultState().withProperty(FACING_PROPERTY, EnumFacing.getFront(meta));
     }
 
     @Override
     public int getMetaFromState(IBlockState state)
     {
-        return state.getValue(FACING).getIndex();
+        return state.getValue(FACING_PROPERTY).getIndex();
+    }
+
+    @Override
+    public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos)
+    {
+        TileEntity tile = worldIn.getTileEntity(pos);
+        if (tile instanceof TileEntityDimBox)
+        {
+            if (((TileEntityDimBox) tile).isSetup())
+            {
+                return state.withProperty(STATE_PROPERTY_ENUM, State.OPEN);
+            }
+            else if (((TileEntityDimBox) tile).isDoingSetupAnimation())
+            {
+                return state.withProperty(STATE_PROPERTY_ENUM, State.NO_TOP);
+            }
+            return state.withProperty(STATE_PROPERTY_ENUM, State.CLOSED);
+        }
+        return state;
+    }
+
+    public static enum State implements IStringSerializable
+    {
+        CLOSED,
+        OPEN,
+        NO_TOP;
+
+        @Override
+        public String getName()
+        {
+            return name().toLowerCase();
+        }
     }
 }

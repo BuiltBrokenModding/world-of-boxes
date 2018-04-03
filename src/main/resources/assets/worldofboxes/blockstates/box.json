@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "worldofboxes:box",
+    "model": "worldofboxes:box_open",
     "textures": {
 		"0": "worldofboxes:blocks/dirt",
 		"particle": "worldofboxes:blocks/dirt"
@@ -16,6 +16,20 @@
       "textures": {
         "all": "worldofboxes:blocks/dirt"
       }
+    },
+    "state": {
+        "closed" :
+        {
+         "model": "worldofboxes:box_closed"
+        },
+        "open" :
+        {
+         "model": "worldofboxes:box_open"
+        },
+        "no_top" :
+        {
+         "model": "worldofboxes:box_no_top"
+        }
     },
     "facing": {
       "up": {

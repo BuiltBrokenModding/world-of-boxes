@@ -1,12 +1,16 @@
 package com.builtbroken.worldofboxes.content.block.box;
 
 import com.builtbroken.worldofboxes.config.ConfigDim;
+import com.builtbroken.worldofboxes.network.PacketHandler;
+import com.builtbroken.worldofboxes.network.PacketSyncBox;
 import com.builtbroken.worldofboxes.reg.WBBlocks;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
@@ -22,20 +26,66 @@ import java.lang.reflect.Method;
  * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
  * Created by Dark(DarkGuardsman, Robert) on 3/30/2018.
  */
-public class TileEntityDimBox extends TileEntity
+public class TileEntityDimBox extends TileEntity implements ITickable
 {
     public final static String NBT_TARGET_DIM = "targetDim";
     public final static String NBT_TARGET = "target";
 
+    public final static int ANIMATION_TIMER = 300;
+
     private static Method copyFromOldField; //TODO replace with AT
 
-    BlockPos teleportTarget;
-    int teleportDim;
-    boolean isSetup = false;
+    public BlockPos teleportTarget;
+    public int teleportDim;
+    public boolean isSetup = false;
+
+    public boolean doingSetupAnimation = false;
+    public int animationTimer = 0;
+    public float animationStep = 0;
+
+
+    private byte packetTimer = 0;
+    private byte updateCheck = 0;
+    private BlockDimBox.State prevRenderState;
 
     public boolean isSetup()
     {
         return isSetup;
+    }
+
+    @Override
+    public void update()
+    {
+        if (doingSetupAnimation && animationTimer-- <= 0)
+        {
+            doingSetupAnimation = false;
+            if (!world.isRemote)
+            {
+                randomizeDim();
+            }
+        }
+
+        if (!world.isRemote)
+        {
+            if (packetTimer++ >= 0)
+            {
+                packetTimer = 0;
+                PacketHandler.sendToAllAround(new PacketSyncBox(this), this);
+            }
+        }
+        else if (updateCheck++ >= 5)
+        {
+            IBlockState state = world.getBlockState(getPos());
+            if (state.getProperties().containsKey(BlockDimBox.STATE_PROPERTY_ENUM))
+            {
+                BlockDimBox.State renderState = state.getValue(BlockDimBox.STATE_PROPERTY_ENUM);
+                if (renderState != prevRenderState)
+                {
+                    prevRenderState = renderState;
+                    world.markBlockRangeForRenderUpdate(getPos(), getPos());
+                }
+            }
+        }
     }
 
     @Override
@@ -66,6 +116,12 @@ public class TileEntityDimBox extends TileEntity
             }
         }
         return super.writeToNBT(compound);
+    }
+
+    public void startSetupAnimation()
+    {
+        doingSetupAnimation = true;
+        animationTimer = ANIMATION_TIMER;
     }
 
     public void randomizeDim()
@@ -110,7 +166,7 @@ public class TileEntityDimBox extends TileEntity
 
             //TODO start dim animation
             //TODO randomize world grid
-            setTarget(targetDim , teleportTarget);
+            setTarget(targetDim, teleportTarget);
         }
     }
 
@@ -133,7 +189,7 @@ public class TileEntityDimBox extends TileEntity
      */
     public void teleport(EntityPlayerMP player)
     {
-        if(isSetup())
+        if (isSetup())
         {
             //TODO create short distance teleporter if same dim
             //TODO spawn above box
@@ -205,5 +261,10 @@ public class TileEntityDimBox extends TileEntity
                 e.printStackTrace();
             }
         }
+    }
+
+    public boolean isDoingSetupAnimation()
+    {
+        return doingSetupAnimation;
     }
 }
