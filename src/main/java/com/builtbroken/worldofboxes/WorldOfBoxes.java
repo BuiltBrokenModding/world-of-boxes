@@ -1,6 +1,7 @@
 package com.builtbroken.worldofboxes;
 
 import com.builtbroken.worldofboxes.config.ConfigDim;
+import com.builtbroken.worldofboxes.network.PacketHandler;
 import com.builtbroken.worldofboxes.world.BoxReplacerWorldGenerator;
 import com.builtbroken.worldofboxes.world.BoxWorldProvider;
 import net.minecraft.world.DimensionType;
@@ -50,6 +51,7 @@ public class WorldOfBoxes
     public void preInit(FMLPreInitializationEvent event)
     {
         NetworkRegistry.INSTANCE.registerGuiHandler(this, proxy);
+        PacketHandler.registerMessages(DOMAIN);
 
         if (ConfigDim.dimID == 0)
         {
