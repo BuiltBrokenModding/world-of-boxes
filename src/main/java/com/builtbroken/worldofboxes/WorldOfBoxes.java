@@ -58,7 +58,7 @@ public class WorldOfBoxes
             ConfigDim.dimID = DimensionManager.getNextFreeDimId();
         }
 
-        dimensionType = DimensionType.register(DOMAIN, "_worldofboxes", ConfigDim.dimID, BoxWorldProvider.class, false);
+        dimensionType = DimensionType.register(DOMAIN, "_worldofboxes", ConfigDim.dimID, BoxWorldProvider.class, true);
         DimensionManager.registerDimension(ConfigDim.dimID, dimensionType);
 
         //Generator, we want to run last to make sure we replace all blocks

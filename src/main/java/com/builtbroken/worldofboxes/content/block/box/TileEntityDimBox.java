@@ -130,47 +130,58 @@ public class TileEntityDimBox extends TileEntity implements ITickable
 
     public void randomizeDim()
     {
-        //Get random point to teleport user
-        final int x = world.rand.nextInt(10000) - world.rand.nextInt(10000);
-        final int z = world.rand.nextInt(10000) - world.rand.nextInt(10000);
-
-        //Init target point for ray trace
-        int y = 100;
-        teleportTarget = new BlockPos(x, y, z);
-
-        //Get world
-        final int targetDim = world.provider.getDimension() == ConfigDim.dimID ? 0 : ConfigDim.dimID;
-        final World targetWorld = DimensionManager.getWorld(targetDim);
-
-        //Load chunk
-        targetWorld.getBlockState(teleportTarget);
-
-        //Find spot to start looking for placments
-        RayTraceResult result = targetWorld.rayTraceBlocks(new Vec3d(x, 255, z), new Vec3d(x, 0, z), false, true, true);
-        if (result != null && result.typeOfHit == RayTraceResult.Type.BLOCK)
+        try
         {
-            //Find spot to place box
-            y = result.getBlockPos().getY() + 1;
-            BlockPos pos = new BlockPos(x, y, z);
-            while (!targetWorld.getBlockState(pos).getBlock().isReplaceable(targetWorld, pos))
+            //Get random point to teleport user
+            final int x = world.rand.nextInt(100000) - world.rand.nextInt(100000);
+            final int z = world.rand.nextInt(100000) - world.rand.nextInt(100000);
+
+            //Init target point for ray trace
+            int y = 100;
+            teleportTarget = new BlockPos(x, y, z);
+
+            //Get world
+            final int targetDim = world.provider.getDimension() == ConfigDim.dimID ? 0 : ConfigDim.dimID;
+            final World targetWorld = DimensionManager.getWorld(targetDim);
+            if(targetWorld != null)
             {
-                y++;
-                pos = new BlockPos(x, y, z);
+                //Load chunk
+                targetWorld.getBlockState(teleportTarget);
+
+                //Find spot to start looking for placments
+                RayTraceResult result = targetWorld.rayTraceBlocks(new Vec3d(x, 255, z), new Vec3d(x, 0, z), false, true, true);
+                if (result != null && result.typeOfHit == RayTraceResult.Type.BLOCK)
+                {
+                    //Find spot to place box
+                    y = result.getBlockPos().getY() + 1;
+                    BlockPos pos = new BlockPos(x, y, z);
+                    while (!targetWorld.getBlockState(pos).getBlock().isReplaceable(targetWorld, pos))
+                    {
+                        y++;
+                        pos = new BlockPos(x, y, z);
+                    }
+
+                    //Block box and set data, so player can return
+                    targetWorld.setBlockState(pos, WBBlocks.BOX.getDefaultState());
+                    TileEntity tile = targetWorld.getTileEntity(pos);
+                    if (tile instanceof TileEntityDimBox)
+                    {
+                        ((TileEntityDimBox) tile).setTarget(world.provider.getDimension(), getPos().up());
+                    }
+
+                    teleportTarget = pos.up();
+
+                    //TODO start dim animation
+                    //TODO randomize world grid
+                    setTarget(targetDim, teleportTarget);
+                }
             }
-
-            //Block box and set data, so player can return
-            targetWorld.setBlockState(pos, WBBlocks.BOX.getDefaultState());
-            TileEntity tile = targetWorld.getTileEntity(pos);
-            if (tile instanceof TileEntityDimBox)
-            {
-                ((TileEntityDimBox) tile).setTarget(world.provider.getDimension(), getPos().up());
-            }
-
-            teleportTarget = pos.up();
-
-            //TODO start dim animation
-            //TODO randomize world grid
-            setTarget(targetDim, teleportTarget);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            isSetup = false;
+            teleportTarget = null;
         }
     }
 
