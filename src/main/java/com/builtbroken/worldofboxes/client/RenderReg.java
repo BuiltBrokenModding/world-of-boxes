@@ -10,10 +10,13 @@ import com.builtbroken.worldofboxes.world.BoxWorldProvider;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockOldLeaf;
 import net.minecraft.block.BlockPlanks;
+import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.renderer.block.statemap.DefaultStateMapper;
 import net.minecraft.client.renderer.color.IBlockColor;
 import net.minecraft.item.Item;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ColorizerFoliage;
 import net.minecraft.world.ColorizerGrass;
@@ -29,6 +32,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 
 import javax.annotation.Nullable;
+import java.util.Map;
 import java.util.Random;
 
 /**
@@ -107,12 +111,12 @@ public final class RenderReg
     public static void registerAllModels(ModelRegistryEvent event)
     {
         addItemRender(WBBlocks.BOX);
-        addItemRender(WBBlocks.LOG);
-        addItemRender(WBBlocks.LOG2);
-        addItemRender(WBBlocks.LEAF);
-        addItemRender(WBBlocks.LEAF2);
+        addItemSubtypesRender(WBBlocks.LOG, 0, 3);
+        addItemSubtypesRender(WBBlocks.LOG2, 4, 5);
+        addItemSubtypesRender(WBBlocks.LEAF, 0, 3);
+        addItemSubtypesRender(WBBlocks.LEAF2, 4, 5);
         addItemRender(WBBlocks.GRASS);
-        addItemRender(WBBlocks.TALL_GRASS);
+        addItemSubtypesRender(WBBlocks.TALL_GRASS, 0, 2);
 
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityDimBox.class, new TESRBox());
     }
@@ -122,6 +126,24 @@ public final class RenderReg
         ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(block), 0, new ModelResourceLocation(block.getRegistryName(), "inventory"));
     }
 
+    private static void addItemSubtypesRender(Block block, int min, int max)
+    {
+        Item item = Item.getItemFromBlock(block);
+        ResourceLocation name = block.getRegistryName();
+        ModelLoader.setCustomStateMapper(block, new DefaultStateMapper()
+        {
+            @Override
+            protected ModelResourceLocation getModelResourceLocation(IBlockState state)
+            {
+                return new ModelResourceLocation(name, getPropertyString(state.getProperties()));
+            }
+        });
+        for (int i = min; i <= max; i++)
+        {
+            ModelLoader.setCustomModelResourceLocation(item, i, new ModelResourceLocation(name, getPropertyString(block.getStateFromMeta(i).getProperties())));
+        }
+    }
+
     @SubscribeEvent
     public static void onWorldLoad(WorldEvent.Load event)
     {
@@ -129,5 +151,46 @@ public final class RenderReg
         {
             event.getWorld().provider.setSkyRenderer(new SkyBoxRenderBox());
         }
+    }
+
+    public static String getPropertyString(Map<IProperty<?>, Comparable<?>> values, String... extrasArgs)
+    {
+        StringBuilder stringbuilder = new StringBuilder();
+
+        for (Map.Entry<IProperty<?>, Comparable<?>> entry : values.entrySet())
+        {
+            if (stringbuilder.length() != 0)
+            {
+                stringbuilder.append(",");
+            }
+
+            IProperty<?> iproperty = entry.getKey();
+            stringbuilder.append(iproperty.getName());
+            stringbuilder.append("=");
+            stringbuilder.append(getPropertyName(iproperty, entry.getValue()));
+        }
+
+
+        if (stringbuilder.length() == 0)
+        {
+            stringbuilder.append("inventory");
+        }
+
+        for (String args : extrasArgs)
+        {
+            if (stringbuilder.length() != 0)
+            {
+                stringbuilder.append(",");
+            }
+            stringbuilder.append(args);
+        }
+
+        return stringbuilder.toString();
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T extends Comparable<T>> String getPropertyName(IProperty<T> property, Comparable<?> comparable)
+    {
+        return property.getName((T) comparable);
     }
 }
