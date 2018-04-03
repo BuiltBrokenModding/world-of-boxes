@@ -54,6 +54,12 @@ public class BlockCBTallGrass extends BlockBush implements IGrowable, IShearable
     }
 
     @Override
+    protected boolean canSustainBush(IBlockState state)
+    {
+        return true; //Its cardboard so we don't care
+    }
+
+    @Override
     public boolean isReplaceable(IBlockAccess worldIn, BlockPos pos)
     {
         return true;

@@ -17,6 +17,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 
 import javax.annotation.Nullable;
+import java.util.Random;
 
 /**
  * @see <a href="https://github.com/BuiltBrokenModding/VoltzEngine/blob/development/license.md">License</a> for what you can and can't do with the code.
@@ -30,14 +31,23 @@ public final class RenderReg
     {
         event.getBlockColors().registerBlockColorHandler(new IBlockColor()
         {
+            Random random = new Random();
+
+            @Override
             public int colorMultiplier(IBlockState state, @Nullable IBlockAccess worldIn, @Nullable BlockPos pos, int tintIndex)
             {
-                return worldIn != null && pos != null ? BiomeColorHelper.getGrassColorAtPos(worldIn, pos) : ColorizerGrass.getGrassColor(0.5D, 1.0D);
+                int color = worldIn != null && pos != null
+                        ? BiomeColorHelper.getGrassColorAtPos(worldIn, pos)
+                        : ColorizerGrass.getGrassColor(0.5D, 1.0D);
+                return color + random.nextInt(100);
             }
         }, WBBlocks.GRASS);
 
         event.getBlockColors().registerBlockColorHandler(new IBlockColor()
         {
+            Random random = new Random();
+
+            @Override
             public int colorMultiplier(IBlockState state, @Nullable IBlockAccess worldIn, @Nullable BlockPos pos, int tintIndex)
             {
                 BlockPlanks.EnumType blockplanks$enumtype = (BlockPlanks.EnumType) state.getValue(BlockOldLeaf.VARIANT);
@@ -52,7 +62,10 @@ public final class RenderReg
                 }
                 else
                 {
-                    return worldIn != null && pos != null ? BiomeColorHelper.getFoliageColorAtPos(worldIn, pos) : ColorizerFoliage.getFoliageColorBasic();
+                    int color = worldIn != null && pos != null
+                            ? BiomeColorHelper.getFoliageColorAtPos(worldIn, pos)
+                            : ColorizerFoliage.getFoliageColorBasic();
+                    return color + random.nextInt(100);
                 }
             }
         }, WBBlocks.LEAF);
