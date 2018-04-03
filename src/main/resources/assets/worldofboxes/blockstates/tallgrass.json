@@ -1,5 +1,22 @@
 {
-    "variants": {
-        "normal": { "model": "worldofboxes:tallgrass" }
+  "forge_marker": 1,
+  "defaults": {
+    "model": "tinted_cross",
+    "textures": {
+      "cross": "worldofboxes:blocks/tallgrass"
     }
+  },
+  "variants": {
+    "normal": [
+      {}
+    ],
+    "inventory": [
+      {}
+    ],
+    "type": {
+      "dead_bush": {},
+      "tall_grass": {},
+      "fern": {}
+    }
+  }
 }
