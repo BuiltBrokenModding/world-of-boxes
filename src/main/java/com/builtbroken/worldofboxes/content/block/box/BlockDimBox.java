@@ -44,7 +44,7 @@ public class BlockDimBox extends Block implements ITileEntityProvider
         setRegistryName(WorldOfBoxes.DOMAIN, "box");
         setUnlocalizedName(WorldOfBoxes.PREFIX + "box");
         setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
-        setBlockUnbreakable();
+        setHardness(50);
     }
 
     @Override
