@@ -107,12 +107,12 @@ public final class RenderReg
     public static void registerAllModels(ModelRegistryEvent event)
     {
         addItemRender(WBBlocks.BOX);
-
-        ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(WBBlocks.LOG2), 0, new ModelResourceLocation(WBBlocks.LOG.getRegistryName(), "inventory"));
-        ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(WBBlocks.LEAF2), 0, new ModelResourceLocation(WBBlocks.LEAF.getRegistryName(), "inventory"));
-
-        ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(WBBlocks.LOG), 0, new ModelResourceLocation(WBBlocks.LOG.getRegistryName(), "inventory"));
-        ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(WBBlocks.LEAF), 0, new ModelResourceLocation(WBBlocks.LEAF.getRegistryName(), "inventory"));
+        addItemRender(WBBlocks.LOG);
+        addItemRender(WBBlocks.LOG2);
+        addItemRender(WBBlocks.LEAF);
+        addItemRender(WBBlocks.LEAF2);
+        addItemRender(WBBlocks.GRASS);
+        addItemRender(WBBlocks.TALL_GRASS);
 
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityDimBox.class, new TESRBox());
     }
@@ -125,7 +125,7 @@ public final class RenderReg
     @SubscribeEvent
     public static void onWorldLoad(WorldEvent.Load event)
     {
-        if(event.getWorld().provider instanceof BoxWorldProvider)
+        if (event.getWorld().provider instanceof BoxWorldProvider)
         {
             event.getWorld().provider.setSkyRenderer(new SkyBoxRenderBox());
         }

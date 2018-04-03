@@ -1,0 +1,57 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "leaves",
+    "textures": {
+      "all": "worldofboxes:blocks/leaves/leaves"
+    }
+  },
+  "variants": {
+    "normal": [
+      {}
+    ],
+    "inventory": [
+      {}
+    ],
+    "variant": {
+      "oak": {
+        "textures": {
+          "all": "worldofboxes:blocks/leaves/leaves"
+        }
+      },
+      "spruce": {
+        "textures": {
+          "all": "worldofboxes:blocks/leaves/leaves"
+        }
+      },
+      "birch": {
+        "textures": {
+          "all": "worldofboxes:blocks/leaves/leaves"
+        }
+      },
+      "jungle": {
+        "textures": {
+          "all": "worldofboxes:blocks/leaves/leaves"
+        }
+      },
+      "acacia": {
+        "textures": {
+          "all": "worldofboxes:blocks/leaves/leaves"
+        }
+      },
+      "dark_oak": {
+        "textures": {
+          "all": "worldofboxes:blocks/leaves/leaves"
+        }
+      }
+    },
+    "decayable": {
+      "true": {},
+      "false": {}
+    },
+    "check_decay": {
+      "true": {},
+      "false": {}
+    }
+  }
+}

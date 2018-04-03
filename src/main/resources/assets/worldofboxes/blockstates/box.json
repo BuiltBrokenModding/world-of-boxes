@@ -1,7 +1,11 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "worldofboxes:box_model"
+    "model": "worldofboxes:box",
+    "textures": {
+		"0": "worldofboxes:blocks/dirt",
+		"particle": "worldofboxes:blocks/dirt"
+	}
   },
   "variants": {
     "normal": [

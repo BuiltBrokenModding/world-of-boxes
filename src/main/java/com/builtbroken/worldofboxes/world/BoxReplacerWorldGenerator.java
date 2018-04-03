@@ -1,6 +1,5 @@
 package com.builtbroken.worldofboxes.world;
 
-import com.builtbroken.jlib.lang.StringHelpers;
 import com.builtbroken.worldofboxes.WorldOfBoxes;
 import com.builtbroken.worldofboxes.reg.WBBlocks;
 import net.minecraft.block.Block;
@@ -27,7 +26,6 @@ public class BoxReplacerWorldGenerator implements IWorldGenerator
         if (world.provider.getDimensionType() == WorldOfBoxes.dimensionType)
         {
             Chunk chunk = world.getChunkFromChunkCoords(chunkX, chunkZ);
-            long time = System.nanoTime();
             for (int x = -16; x < 32; x++)
             {
                 for (int z = -16; z < 32; z++)
@@ -59,8 +57,6 @@ public class BoxReplacerWorldGenerator implements IWorldGenerator
                     }
                 }
             }
-            time = System.nanoTime() - time;
-            System.out.println(StringHelpers.formatNanoTime(time));
         }
     }
 }
