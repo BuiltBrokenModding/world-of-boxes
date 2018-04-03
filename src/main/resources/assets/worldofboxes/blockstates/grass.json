@@ -4,12 +4,25 @@
     "model": "minecraft:grass"
   },
   "variants": {
-    "normal": [
-      {}
-    ],
-    "inventory": [
-      {}
-    ],
+    "normal": {
+      "model": "cube_all",
+      "textures": {
+        "particle": "worldofboxes:blocks/dirt",
+        "bottom": "worldofboxes:blocks/dirt",
+        "top": "worldofboxes:blocks/grass_top",
+        "side": "worldofboxes:blocks/grass_side"
+      }
+    },
+    "inventory": {
+      "model": "minecraft:grass",
+      "textures": {
+        "particle": "worldofboxes:blocks/dirt",
+        "bottom": "worldofboxes:blocks/dirt",
+        "top": "worldofboxes:blocks/grass_top",
+        "side": "worldofboxes:blocks/grass_side",
+        "overlay": "worldofboxes:blocks/grass_side_overlay"
+      }
+    },
     "snowy": {
       "false": {
         "model": "minecraft:grass",

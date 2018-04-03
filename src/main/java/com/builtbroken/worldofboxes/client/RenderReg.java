@@ -15,7 +15,10 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.block.statemap.DefaultStateMapper;
 import net.minecraft.client.renderer.color.IBlockColor;
+import net.minecraft.client.renderer.color.IItemColor;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ColorizerFoliage;
@@ -55,14 +58,12 @@ public final class RenderReg
                 int color = worldIn != null && pos != null
                         ? BiomeColorHelper.getGrassColorAtPos(worldIn, pos)
                         : ColorizerGrass.getGrassColor(0.5D, 1.0D);
-                return color + random.nextInt(100);
+                return color + (worldIn != null ? random.nextInt(100) : 0);
             }
         }, WBBlocks.GRASS);
 
         event.getBlockColors().registerBlockColorHandler(new IBlockColor()
         {
-
-
             @Override
             public int colorMultiplier(IBlockState state, @Nullable IBlockAccess worldIn, @Nullable BlockPos pos, int tintIndex)
             {
@@ -85,10 +86,16 @@ public final class RenderReg
                             : ColorizerFoliage.getFoliageColorBasic();
 
                 }
-                return color + random.nextInt(100);
+                return color + (worldIn != null ? random.nextInt(100) : 0);
             }
         }, WBBlocks.LEAF);
-
+        event.getBlockColors().registerBlockColorHandler(new IBlockColor()
+        {
+            public int colorMultiplier(IBlockState state, @Nullable IBlockAccess worldIn, @Nullable BlockPos pos, int tintIndex)
+            {
+                return worldIn != null && pos != null ? BiomeColorHelper.getFoliageColorAtPos(worldIn, pos) : ColorizerFoliage.getFoliageColorBasic();
+            }
+        }, WBBlocks.LEAF2);
         event.getBlockColors().registerBlockColorHandler(new IBlockColor()
         {
             public int colorMultiplier(IBlockState state, @Nullable IBlockAccess worldIn, @Nullable BlockPos pos, int tintIndex)
@@ -102,9 +109,22 @@ public final class RenderReg
                 {
                     color = state.getValue(BlockCBTallGrass.TYPE) == BlockCBTallGrass.EnumType.DEAD_BUSH ? 16777215 : ColorizerGrass.getGrassColor(0.5D, 1.0D);
                 }
-                return color + random.nextInt(100);
+                return color + (worldIn != null ? random.nextInt(100) : 0);
             }
         }, WBBlocks.TALL_GRASS);
+    }
+
+    @SubscribeEvent
+    public static void registerItemColors(ColorHandlerEvent.Item event)
+    {
+        event.getItemColors().registerItemColorHandler(new IItemColor()
+        {
+            public int colorMultiplier(ItemStack stack, int tintIndex)
+            {
+                IBlockState iblockstate = ((ItemBlock) stack.getItem()).getBlock().getStateFromMeta(stack.getMetadata());
+                return event.getBlockColors().colorMultiplier(iblockstate, (IBlockAccess) null, (BlockPos) null, tintIndex);
+            }
+        }, WBBlocks.LEAF, WBBlocks.LEAF2, WBBlocks.TALL_GRASS, WBBlocks.GRASS);
     }
 
     @SubscribeEvent
@@ -112,9 +132,9 @@ public final class RenderReg
     {
         addItemRender(WBBlocks.BOX);
         addItemSubtypesRender(WBBlocks.LOG, 0, 3);
-        addItemSubtypesRender(WBBlocks.LOG2, 4, 5);
+        addItemSubtypesRender(WBBlocks.LOG2, 0, 1);
         addItemSubtypesRender(WBBlocks.LEAF, 0, 3);
-        addItemSubtypesRender(WBBlocks.LEAF2, 4, 5);
+        addItemSubtypesRender(WBBlocks.LEAF2, 0, 1);
         addItemRender(WBBlocks.GRASS);
         addItemSubtypesRender(WBBlocks.TALL_GRASS, 0, 2);
 

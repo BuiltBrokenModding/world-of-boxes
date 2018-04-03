@@ -7,9 +7,7 @@ import com.builtbroken.worldofboxes.content.block.box.BlockDimBox;
 import com.builtbroken.worldofboxes.content.block.box.TileEntityDimBox;
 import net.minecraft.block.*;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
-import net.minecraft.item.ItemStack;
+import net.minecraft.item.*;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -29,16 +27,16 @@ public final class WBBlocks
     public static final Block BOX = null;
 
     @GameRegistry.ObjectHolder("log")
-    public static final Block LOG = null;
+    public static final BlockOldLog LOG = null;
 
     @GameRegistry.ObjectHolder("log2")
-    public static final Block LOG2 = null;
+    public static final BlockNewLog LOG2 = null;
 
     @GameRegistry.ObjectHolder("leaves")
-    public static final Block LEAF = null;
+    public static final BlockOldLeaf LEAF = null;
 
     @GameRegistry.ObjectHolder("leaves2")
-    public static final Block LEAF2 = null;
+    public static final BlockNewLeaf LEAF2 = null;
 
     @GameRegistry.ObjectHolder("grass")
     public static final Block GRASS = null;
@@ -75,12 +73,24 @@ public final class WBBlocks
     public static void registerItems(RegistryEvent.Register<Item> event)
     {
         event.getRegistry().register(new ItemBlock(BOX).setRegistryName(BOX.getRegistryName()));
-        event.getRegistry().register(new ItemBlock(LOG).setRegistryName(LOG.getRegistryName()));
-        event.getRegistry().register(new ItemBlock(LOG2).setRegistryName(LOG2.getRegistryName()));
-        event.getRegistry().register(new ItemBlock(LEAF).setRegistryName(LEAF.getRegistryName()));
-        event.getRegistry().register(new ItemBlock(LEAF2).setRegistryName(LEAF2.getRegistryName()));
-        event.getRegistry().register(new ItemBlock(GRASS).setRegistryName(GRASS.getRegistryName()));
-        event.getRegistry().register(new ItemBlock(TALL_GRASS).setRegistryName(TALL_GRASS.getRegistryName()));
+        event.getRegistry().register(new ItemMultiTexture(LOG, LOG, new ItemMultiTexture.Mapper()
+        {
+            public String apply(ItemStack p_apply_1_)
+            {
+                return BlockPlanks.EnumType.byMetadata(p_apply_1_.getMetadata()).getUnlocalizedName();
+            }
+        }).setRegistryName(LOG.getRegistryName()));
+        event.getRegistry().register(new ItemMultiTexture(LOG2, LOG2, new ItemMultiTexture.Mapper()
+        {
+            public String apply(ItemStack p_apply_1_)
+            {
+                return BlockPlanks.EnumType.byMetadata(p_apply_1_.getMetadata() + 4).getUnlocalizedName();
+            }
+        }).setRegistryName(LOG2.getRegistryName()));
+        event.getRegistry().register(new ItemLeaves(LEAF).setRegistryName(LEAF.getRegistryName()));
+        event.getRegistry().register(new ItemLeaves(LEAF2).setRegistryName(LEAF2.getRegistryName()));
+        event.getRegistry().register(new ItemColored(GRASS, false).setRegistryName(GRASS.getRegistryName()));
+        event.getRegistry().register(new ItemColored(TALL_GRASS, true).setSubtypeNames(new String[] {"shrub", "grass", "fern"}).setRegistryName(TALL_GRASS.getRegistryName()));
 
 
     }
