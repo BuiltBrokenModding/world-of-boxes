@@ -1,8 +1,8 @@
 package com.builtbroken.worldofboxes.network;
 
+import com.builtbroken.worldofboxes.WorldOfBoxes;
 import com.builtbroken.worldofboxes.content.block.box.TileEntityDimBox;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
@@ -66,7 +66,7 @@ public class PacketSyncBox implements IMessage
 
         private void handle(PacketSyncBox message, MessageContext ctx)
         {
-            EntityPlayer player = Minecraft.getMinecraft().player;
+            EntityPlayer player = WorldOfBoxes.proxy.getPlayerForSide(ctx);
             World world = player.getEntityWorld();
 
             if (world.isBlockLoaded(message.blockPos))

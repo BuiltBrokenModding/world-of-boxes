@@ -3,6 +3,8 @@ package com.builtbroken.worldofboxes;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.IGuiHandler;
+import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import net.minecraftforge.fml.relauncher.Side;
 
 import javax.annotation.Nullable;
 
@@ -22,6 +24,20 @@ public class CommonProxy implements IGuiHandler
     @Nullable
     @Override
     public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z)
+    {
+        return null;
+    }
+
+    public EntityPlayer getPlayerForSide(MessageContext ctx)
+    {
+        if(ctx.side == Side.CLIENT)
+        {
+            return getPlayerClient(ctx);
+        }
+        return ctx.getServerHandler().player;
+    }
+
+    public EntityPlayer getPlayerClient(MessageContext ctx)
     {
         return null;
     }

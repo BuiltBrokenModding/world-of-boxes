@@ -59,7 +59,7 @@ public class WorldOfBoxes
         }
 
         dimensionType = DimensionType.register(DOMAIN, "_worldofboxes", ConfigDim.dimID, BoxWorldProvider.class, true);
-        DimensionManager.registerDimension(ConfigDim.dimID, dimensionType);
+        DimensionManager.registerDimension(ConfigDim.dimID, dimensionType); //TODO add a pop up message to let the user change the dim ID if overlap happens
 
         //Generator, we want to run last to make sure we replace all blocks
         GameRegistry.registerWorldGenerator(new BoxReplacerWorldGenerator(), Integer.MAX_VALUE);
